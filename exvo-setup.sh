@@ -108,173 +108,63 @@ if pgrep -x 'exvod' > /dev/null; then
 fi
 
 # Copy binaries to /usr/bin
-sudo cp ExvoMasternodeSetup/Exvo-Ubuntu16.04/exvo* /usr/bin/
-sudo chmod 755 -R ~/ExvoMasternodeSetup
-sudo chmod 755 /usr/bin/exvo*
-
-# Copy masternode monitoring script
-cp ~/ExvoMasternodeSetup/nodemon.sh /usr/local/bin
-sudo chmod 711 /usr/local/bin/nodemon.sh
+sudo mkdir -p /root/exvo/src
+sudo cp ExvoMasternodeSetup/Exvo-Ubuntu16.04/exvo* /root/exvo/src/
+sudo chmod 755 -R /root/ExvoMasternodeSetup
+sudo chmod 755 /root/exvo/src/exvo*
 
 #Create exvo.conf
-if [ ! -f ~/.exvocore/exvo.conf ]; then
-	sudo mkdir ~/.exvocore
-fi
-
-echo -e "${YELLOW}Creating exvo.conf...${NC}"
-cat <<EOF > ~/.exvocore/exvo.conf
-rpcuser=exvorpc
-rpcpassword=$rpcpassword
-EOF
-
-sudo chmod 755 -R ~/.exvocore/exvo.conf
+# if [ ! -f ~/.exvo/exvo.conf ]; then
+# 	sudo mkdir ~/.exvo
+# fi
+#
+# echo -e "${YELLOW}Creating exvo.conf...${NC}"
+# cat <<EOF > ~/.exvo/exvo.conf
+# rpcuser=exvorpc
+# rpcpassword=$rpcpassword
+# EOF
+#
+# sudo chmod 755 -R ~/.exvo/exvo.conf
 
 #Starting daemon first time
-exvod -daemon
-delay 30
+cd /root/exvo/src/
+./exvod -daemon
+delay 5
 
 # #Generate masternode private key
 # echo -e "${YELLOW}Generating masternode key...${NC}"
 # genkey=$(exvo-cli masternode genkey)
-exvo-cli stop
-delay 60
+# exvo-cli stop
+# delay 60
 
-cat <<EOF > ~/.exvocore/exvo.conf
-rpcuser=exvorpc
-rpcpassword=$rpcpassword
+cat <<EOF > ~/.exvo/exvo.conf
+rpcuser=
+rpcpassword=
 rpcallowip=127.0.0.1
-onlynet=ipv4
 listen=1
 server=1
 daemon=1
-maxconnections=64
+maxconnections=256
 externalip=$publicip:8585
 masternode=1
 masternodeprivkey=$key
 EOF
 
+killall exvod
+delay 10
 #Starting daemon second time
-exvod
+cd /root/exvo/src/
+./exvod -daemon
+delay 5
 
-#Setting auto star cron job for exvod
-cronjob="@reboot sleep 30 && exvod"
-crontab -l > tempcron
-if ! grep -q "$cronjob" tempcron; then
-    echo -e "${GREEN}Configuring crontab job...${NC}"
-    echo $cronjob >> tempcron
-    crontab tempcron
-fi
-rm tempcron
+global_mn_count=$(./exvo-cli masternode count)
+echo -e "Before Configuration. Global Masternode Num:${GREEN}$global_mn_count ${NC}"
+delay 5
 
-echo -e "========================================================================
-${YELLOW}Masternode setup is complete!${NC}
-========================================================================
+echo -e "${GREEN}Now Starting Masternode${NC}"
+./exvo-cli masternode start
+delay 5
 
-Masternode was installed with VPS IP Address: ${YELLOW}$publicip${NC}
-
-Masternode Private Key: ${YELLOW}$genkey${NC}
-
-Now you can add the following string to the masternode.conf file
-for your Hot Wallet (the wallet with your Exvo collateral funds):
-======================================================================== \a"
-echo -e "${YELLOW}mn1 $publicip:$PORT $genkey TxId TxIdx${NC}"
-echo -e "========================================================================
-
-Use your mouse to copy the whole string above into the clipboard by
-tripple-click + single-click (Dont use Ctrl-C) and then paste it
-into your ${YELLOW}masternode.conf${NC} file and replace:
-    ${YELLOW}mn1${NC} - with your desired masternode name (alias)
-    ${YELLOW}TxId${NC} - with Transaction Id from masternode outputs
-    ${YELLOW}TxIdx${NC} - with Transaction Index (0 or 1)
-     Remember to save the masternode.conf and restart the wallet!
-
-To introduce your new masternode to the Exvo network, you need to
-issue a masternode start command from your wallet, which proves that
-the collateral for this node is secured."
-
-clear_stdin
-read -p "*** Press any key to continue ***" -n1 -s
-
-echo -e "1) Wait for the node wallet on this VPS to sync with the other nodes
-on the network. Eventually the 'IsSynced' status will change
-to 'true', which will indicate a comlete sync, although it may take
-from several minutes to several hours depending on the network state.
-Your initial Masternode Status may read:
-    ${YELLOW}Node just started, not yet activated${NC} or
-    ${YELLOW}Node  is not in masternode list${NC}, which is normal and expected.
-
-2) Wait at least until 'IsBlockchainSynced' status becomes 'true'.
-At this point you can go to your wallet and issue a start
-command by either using Debug Console:
-    Tools->Debug Console-> enter: ${YELLOW}masternode start-alias mn1${NC}
-    where ${YELLOW}mn1${NC} is the name of your masternode (alias)
-    as it was entered in the masternode.conf file
-
-or by using wallet GUI:
-    Masternodes -> Select masternode -> RightClick -> ${YELLOW}start alias${NC}
-
-Once completed step (2), return to this VPS console and wait for the
-Masternode Status to change to: 'Masternode successfully started'.
-This will indicate that your masternode is fully functional and
-you can celebrate this achievement!
-
-Currently your masternode is syncing with the Exvo network...
-
-The following screen will display in real-time
-the list of peer connections, the status of your masternode,
-node synchronization status and additional network and node stats.
-"
-clear_stdin
-read -p "*** Press any key to continue ***" -n1 -s
-
-echo -e "
-${GREEN}...scroll up to see previous screens...${NC}
-
-
-Here are some useful commands and tools for masternode troubleshooting:
-
-========================================================================
-To view masternode configuration produced by this script in exvo.conf:
-
-${YELLOW}cat ~/.exvocore/exvo.conf${NC}
-
-Here is your exvo.conf generated by this script:
--------------------------------------------------${YELLOW}"
-cat ~/.exvocore/exvo.conf
-echo -e "${NC}-------------------------------------------------
-
-NOTE: To edit exvo.conf, first stop the exvod daemon,
-then edit the exvo.conf file and save it in nano: (Ctrl-X + Y + Enter),
-then start the exvod daemon back up:
-
-to stop:   ${YELLOW}exvo-cli stop${NC}
-to edit:   ${YELLOW}vi ~/.exvocore/exvo.conf${NC}
-to start:  ${YELLOW}exvod${NC}
-========================================================================
-To view exvod debug log showing all MN network activity in realtime:
-
-${YELLOW}tail -f ~/.exvocore/debug.log${NC}
-========================================================================
-To monitor system resource utilization and running processes:
-
-${YELLOW}htop${NC}
-========================================================================
-To view the list of peer connections, status of your masternode,
-sync status etc. in real-time, run the nodemon.sh script:
-
-${YELLOW}nodemon.sh${NC}
-
-or just type 'node' and hit <TAB> to autocomplete script name.
-========================================================================
-
-
-Enjoy your Exvo Masternode and thanks for using this setup script!
-
-If you found it helpful, please donate Exvo to:
-ENbQLq2Tiyv1jejwKDhCwPAc68sHzvYquM
-
-"
-# Run nodemon.sh
-nodemon.sh
-
-# EOF
+global_mn_count=$(./exvo-cli masternode count)
+echo -e "Configuration Done. Global Masternode Num:${GREEN}$global_mn_count ${NC}"
+delay 5
