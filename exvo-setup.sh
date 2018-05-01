@@ -9,7 +9,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 #Exvo TCP port
-PORT=13058
+PORT=8585
 
 #Clear keyboard input buffer
 function clear_stdin { while read -r -t 0; do read -r; done; }
@@ -106,11 +106,11 @@ echo -e "${GREEN} Complete Copy Files To /root/exvo/src/${NC}"
 cd /root/exvo/src/
 ./exvod -daemon
 delay 5
-echo -e "${GREEN} Exvod Started${NC}"
+echo -e "${GREEN}Exvod Started${NC}"
 
 killall exvod
 delay 5
-echo -e "${GREEN} Exvod Killed${NC}"
+echo -e "${GREEN}Exvod Killed${NC}"
 
 cat <<EOF > ~/.exvo/exvo.conf
 rpcuser=
@@ -126,7 +126,7 @@ externalip=$publicip:8585
 masternodeprivkey=$key
 EOF
 
-echo -e "${GREEN} Complete exvo.conf Configuration ${NC}"
+echo -e "${GREEN}Complete exvo.conf Configuration ${NC}"
 
 #Starting daemon second time
 cd /root/exvo/src/
@@ -135,16 +135,16 @@ delay 5
 
 echo -e "${GREEN}Test Masternode Installation${NC}"
 ./exvo-cli getinfo
-delay 5
+delay 300
 
-global_mn_count=$(./exvo-cli masternode count)
-echo -e "Before Configuration. Global Masternode Num:${GREEN}$global_mn_count ${NC}"
-delay 5
-
-echo -e "${GREEN}Now Starting Masternode${NC}"
 ./exvo-cli masternode start
-delay 5
+echo -e "${GREEN}Complete Masternode Start${NC}"
+delay 10
 
 global_mn_count=$(./exvo-cli masternode count)
-echo -e "Configuration Done. Global Masternode Num:${GREEN}$global_mn_count ${NC}"
+echo -e "Global Masternode Num:${GREEN}$global_mn_count ${NC}"
+delay 5
+
+mn_status=$(./exvo-cli masternode list | grep $publicip)
+echo -e "${GREEN}Our MN Status: $mn_status ${NC}"
 delay 5
