@@ -93,49 +93,24 @@ else
 fi
 
 #Installing Daemon
-cd ~
 
-#Stop daemon if it's already running
-if pgrep -x 'exvod' > /dev/null; then
-    exvo-cli stop
-    delay 30
-    if pgrep -x 'exvod' > /dev/null; then
-        echo -e "${RED}exvod daemon failed to stop!${NC} \a"
-        echo -e "${YELLOW}Attempting to kill exvod${NC}"
-        pkill exvod
-        delay 30
-    fi
-fi
-
-# Copy binaries to /usr/bin
 sudo mkdir -p /root/exvo/src
-sudo cp ExvoMasternodeSetup/Exvo-Ubuntu16.04/exvo* /root/exvo/src/
+tar zxvf Exvo-Ubuntu16.04.tar.gz
+sudo cp Exvo-Ubuntu16.04/exvo* /root/exvo/src/
 sudo chmod 755 -R /root/ExvoMasternodeSetup
 sudo chmod 755 /root/exvo/src/exvo*
 
-#Create exvo.conf
-# if [ ! -f ~/.exvo/exvo.conf ]; then
-# 	sudo mkdir ~/.exvo
-# fi
-#
-# echo -e "${YELLOW}Creating exvo.conf...${NC}"
-# cat <<EOF > ~/.exvo/exvo.conf
-# rpcuser=exvorpc
-# rpcpassword=$rpcpassword
-# EOF
-#
-# sudo chmod 755 -R ~/.exvo/exvo.conf
+echo -e "${GREEN} Complete Copy Files To /root/exvo/src/${NC}"
 
 #Starting daemon first time
 cd /root/exvo/src/
 ./exvod -daemon
 delay 5
+echo -e "${GREEN} Exvod Started${NC}"
 
-# #Generate masternode private key
-# echo -e "${YELLOW}Generating masternode key...${NC}"
-# genkey=$(exvo-cli masternode genkey)
-# exvo-cli stop
-# delay 60
+killall exvod
+delay 5
+echo -e "${GREEN} Exvod Killed${NC}"
 
 cat <<EOF > ~/.exvo/exvo.conf
 rpcuser=
@@ -145,16 +120,21 @@ listen=1
 server=1
 daemon=1
 maxconnections=256
-externalip=$publicip:8585
 masternode=1
+promode=1
+externalip=$publicip:8585
 masternodeprivkey=$key
 EOF
 
-killall exvod
-delay 10
+echo -e "${GREEN} Complete exvo.conf Configuration ${NC}"
+
 #Starting daemon second time
 cd /root/exvo/src/
 ./exvod -daemon
+delay 5
+
+echo -e "${GREEN}Test Masternode Installation${NC}"
+./exvo-cli getinfo
 delay 5
 
 global_mn_count=$(./exvo-cli masternode count)
