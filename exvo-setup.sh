@@ -1,6 +1,6 @@
 Exvo#!/bin/bash
-# EXVO Masternode Setup Script V1.2 for Ubuntu 16.04 LTS
-# (c) 2018 by Allroad [FasterPool.com] for Exvo
+# EXVO Masternode Setup Script for Ubuntu 16.04 LTS
+# (c) 2018 by Kai for Exvo
 
 #Color codes
 RED='\033[0;91m'
@@ -133,18 +133,22 @@ cd /root/exvo/src/
 ./exvod -daemon
 delay 5
 
+echo ""
 echo -e "${GREEN}Test Masternode Installation${NC}"
 ./exvo-cli getinfo
 delay 300
 
+echo ""
 ./exvo-cli masternode start
 echo -e "${GREEN}Complete Masternode Start${NC}"
 delay 10
 
+echo ""
 global_mn_count=$(./exvo-cli masternode count)
 echo -e "Global Masternode Num: ${GREEN}$global_mn_count ${NC}"
 delay 5
 
+echo ""
 mn_status=$(./exvo-cli masternode list | grep $publicip)
 echo -e "${GREEN}Our MN Status: [$mn_status] ${NC}"
 delay 5
