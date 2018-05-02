@@ -2,7 +2,7 @@
 
 **NOTE:** This installation guide is provided as is with no warranties of any kind.
 
-**NOTE:** This script does not ask for manually type in IP address. The only thing need you to interact is to type in your __Masternode Private Key__. It will create a 2GB swap file.
+**NOTE:** This script does not require manually put in IP address. The only thing you may need to interact is to type in your __Masternode Private Key__. Also, it will create a 2GB swap file.
 
 
 If you follow the steps and use a newly installed Ubuntu 16.04 VPS, it will automatically configure and start your Master Node. Other version of Ubuntu and other Linux distros are not currently supported.
@@ -65,7 +65,7 @@ It does not matter which way you open the file or how you edit it. In either cas
 __Here's what you need to do in masternode.conf file__. For each masternode you are going to setup, you need to enter one separate line of text  which will look like this:
 
 ```bash
-mn1 [IP]]:8585 7sPfzySd3WKKBTKwA2aaPHmgXk7Pw4DjNxtP9RP7378jmB6bfAD 59c25d4b31b573bc78cb2369667e58bc13d6d092d2c30eeffa2dcaad86119536 1 0
+mn1 [IP]:8585 7sPfzySd3WKKBTKwA2aaPHmgXk7Pw4DjNxtP9RP7378jmB6bfAD 59c25d4b31b573bc78cb2369667e58bc13d6d092d2c30eeffa2dcaad86119536 1 0
 ```
 
 The format for this string is as follow:
@@ -114,6 +114,8 @@ cd ~/ExvoMasternodeSetup
 
 
 
-If you found this script and masternode setup guide helpful...
+If you found the scripts and masternode setup guide helpful...
 
 ... please consider tipping me Exvo to: **ENbQLq2Tiyv1jejwKDhCwPAc68sHzvYquM**.
+
+Thanks :-)
