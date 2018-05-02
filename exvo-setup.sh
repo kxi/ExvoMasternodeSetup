@@ -100,7 +100,7 @@ sudo cp Exvo-Ubuntu16.04/exvo* /root/exvo/src/
 sudo chmod 755 -R /root/ExvoMasternodeSetup
 sudo chmod 755 /root/exvo/src/exvo*
 
-echo -e "${GREEN} Complete Copy Files To /root/exvo/src/${NC}"
+echo -e "${GREEN}Complete Copy Files To /root/exvo/src/${NC}"
 
 #Starting daemon first time
 cd /root/exvo/src/
@@ -142,9 +142,9 @@ echo -e "${GREEN}Complete Masternode Start${NC}"
 delay 10
 
 global_mn_count=$(./exvo-cli masternode count)
-echo -e "Global Masternode Num:${GREEN}$global_mn_count ${NC}"
+echo -e "Global Masternode Num: ${GREEN}$global_mn_count ${NC}"
 delay 5
 
 mn_status=$(./exvo-cli masternode list | grep $publicip)
-echo -e "${GREEN}Our MN Status: $mn_status ${NC}"
+echo -e "${GREEN}Our MN Status: [$mn_status] ${NC}"
 delay 5

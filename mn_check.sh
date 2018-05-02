@@ -31,9 +31,9 @@ echo -e "${GREEN}Masternode Get Info${NC}"
 delay 2
 
 global_mn_count=$(./exvo-cli masternode count)
-echo -e "Global Masternode Num:${GREEN}$global_mn_count ${NC}"
+echo -e "Global Masternode Num: ${GREEN}$global_mn_count ${NC}"
 delay 2
 
 mn_status=$(./exvo-cli masternode list | grep $publicip)
-echo -e "${GREEN}Our MN Status: $mn_status ${NC}"
+echo -e "${GREEN}Our MN Status: [$mn_status] ${NC}"
 delay 2
